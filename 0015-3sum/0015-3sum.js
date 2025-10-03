@@ -5,34 +5,31 @@
 var threeSum = function (nums) {
     const ans = [];
     nums.sort((a, b) => a - b);
+    const map = new Map();
 
     for (let i = 0; i < nums.length; i++) {
-        while (i < nums.length && nums[i] == nums[i - 1]) {
-            i++;
+        map.set(nums[i], (map.get(nums[i]) || 0) + 1);
+    }
+
+    for (let i = 0; i < nums.length; i++) {
+        map.set(nums[i], map.get(nums[i]) - 1);
+        if (i > 0 && nums[i] === nums[i - 1]) {
+            continue;
         }
 
-        let j = i + 1;
-        let k = nums.length - 1;
-        while (j < k) {
-            const sum = nums[i] + nums[j] + nums[k];
-            if (sum == 0) {
-                ans.push([nums[i], nums[j], nums[k]]);
-                j++;
-                k--;
-                while (j < k && nums[j] == nums[j - 1]) {
-                    j++;
-                }
+        for (let j = i + 1; j < nums.length; j++) {
+            map.set(nums[j], map.get(nums[j]) - 1);
+            if (j > i + 1 && nums[j] === nums[j - 1]) {
+                continue;
+            }
+            const diff = -(nums[i] + nums[j]);
+            if (map.get(diff) > 0) {
+                ans.push([nums[i], nums[j], diff]);
+            }
+        }
 
-                while (j < k && nums[k] == nums[k + 1]) {
-                    k--;
-                }
-            }
-            else if (sum > 0) {
-                k--;
-            }
-            else {
-                j++;
-            }
+        for(let j = i + 1; j < nums.length; j++){
+            map.set(nums[j], map.get(nums[j]) + 1);
         }
     }
 
